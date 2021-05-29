@@ -1,3 +1,4 @@
+import csv
 import discord
 import os
 
@@ -22,7 +23,8 @@ async def on_message(message):
     if any(msg.startswith(word) for word in greetings):
         await message.channel.send("yo")
     if msg == "!":
-        await message.channel.send("<@405758393228460033>" + " Buy Sea of thieves now!\nhttps://store.steampowered.com/app/1172620/Sea_of_Thieves/")
+        await message.channel.send("<@{}>".format(message.author.id) + " bad")
+        await message.channel.send("<@{}>".format(405758393228460033) + " Buy Sea of thieves now!\nhttps://store.steampowered.com/app/1172620/Sea_of_Thieves/")
     if "bad" in msg.replace(" ", ""):
         await message.channel.send(":(")
     if msg.split(" ")[0] == "$play":
@@ -74,11 +76,17 @@ async def check_win(message):
             b = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
             prev = "O"
             await message.channel.send(f"@{x_player if b[w[0]] == 'X' else o_player} has won!")
+            with open("standings.csv", "a", newline='') as csvfile:
+                writer = csv.writer(csvfile, delimiter=",")
+                writer.writerow([x_player if b[w[0]] == 'X' else o_player, o_player if b[w[0]] == 'X' else x_player, "winner"])
             x_player = None
             o_player = None
     for space in b:
         if space == " ":
             return
     await message.channel.send("Tie game!")
+    with open("standings.csv", "a", newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=",")
+        writer.writerow([x_player if b[w[0]] == 'X' else o_player, o_player if b[w[0]] == 'X' else x_player, "tie"])
 
 client.run(os.getenv("TOKEN"))
