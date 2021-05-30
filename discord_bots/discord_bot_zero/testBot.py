@@ -89,7 +89,8 @@ async def tic_tac_toe(turn, author):
     await ttt_msg.edit(content=f"{x_player} vs {o_player}\n"
                                f"```\n{b[0]}|{b[1]}|{b[2]}"
                                f"\n-----\n{b[3]}|{b[4]}|{b[5]}"
-                               f"\n-----\n{b[6]}|{b[7]}|{b[8]}\n```")
+                               f"\n-----\n{b[6]}|{b[7]}|{b[8]}\n```"
+                               f"<@{x_player.id if prev == 'O' and x_player is not None else o_player.id if prev == 'X' and o_player is not None else 'None yet'}> turn!")
     await check_win()
 
 
