@@ -45,21 +45,27 @@ class Game:
                 self.previous_turn = "O"
         else:
             await self.channel.send(f"Space is already occupied, try again.")
+        player_turn = "None yet"
+        if self.previous_turn == "O" and self.x_player is not None:
+            player_turn = self.x_player.id
+        elif self.previous_turn == "X" and self.o_player is not None:
+            player_turn = self.o_player.id
         await self.message.edit(content=f"{self.x_player} vs {self.o_player}\n"
                                         f"```\n{self.board[0]}|{self.board[1]}|{self.board[2]}"
                                         f"\n-----\n{self.board[3]}|{self.board[4]}|{self.board[5]}"
                                         f"\n-----\n{self.board[6]}|{self.board[7]}|{self.board[8]}\n```"
-                                        f"<@{self.x_player.id if self.previous_turn == 'O' and self.x_player is not None else self.o_player.id if self.previous_turn == 'X' and self.o_player is not None else 'None yet'}> turn!")
+                                        f"<@{player_turn}> turn!")
 
     async def check_win(self):
         for w in self.win:
             if self.board[w[0]] == self.board[w[1]] == self.board[w[2]] != " ":
-                await self.channel.send(f"<@{self.x_player.id if self.board[w[0]] == 'X' else self.o_player.id}> has won!")
+                await self.channel.send(f"<@{self.x_player.id if self.board[w[0]] == 'X' else self.o_player.id}>"
+                                        f" has won!")
                 with open("standings.csv", "a", newline='') as csvfile:
                     writer = csv.writer(csvfile, delimiter=",")
                     writer.writerow([self.x_player if self.board[w[0]] == 'X' else self.o_player,
                                      self.o_player if self.board[w[0]] == 'X' else self.x_player,
-                                     "winner"])
+                                     "winner", "TicTacToe"])
                 return True
         for space in self.board:
             if space == " ":
@@ -67,5 +73,5 @@ class Game:
         await self.channel.send("Tie game!")
         with open("standings.csv", "a", newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=",")
-            writer.writerow([self.x_player, self.o_player, "tie"])
+            writer.writerow([self.x_player, self.o_player, "tie", "TicTacToe"])
         return True
