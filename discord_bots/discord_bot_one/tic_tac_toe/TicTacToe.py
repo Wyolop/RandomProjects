@@ -2,10 +2,10 @@ import csv
 
 class Game:
 
-    def __init__(self, player, channel):
+    def __init__(self, channel):
         self.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         self.previous_turn = "O"
-        self.x_player = player
+        self.x_player = None
         self.o_player = None
         self.message = None
         self.channel = channel
@@ -18,12 +18,15 @@ class Game:
         self.message = await self.channel.send(f"{self.x_player} vs {self.o_player}\n"
                                                f"```\n{self.board[0]}|{self.board[1]}|{self.board[2]}"
                                                f"\n-----\n{self.board[3]}|{self.board[4]}|{self.board[5]}"
-                                               f"\n-----\n{self.board[6]}|{self.board[7]}|{self.board[8]}\n```")
+                                               f"\n-----\n{self.board[6]}|{self.board[7]}|{self.board[8]}\n```"
+                                               f"<@None yet> turn!")
         for emoji in self.turns.keys():
             await self.message.add_reaction(emoji)
 
     async def turn(self, reaction, user):
-        if self.o_player is None:
+        if self.x_player is None:
+            self.x_player = user
+        elif self.o_player is None:
             self.o_player = user
         emoji = reaction.emoji
         if emoji in self.turns:
@@ -50,7 +53,7 @@ class Game:
             player_turn = self.x_player.id
         elif self.previous_turn == "X" and self.o_player is not None:
             player_turn = self.o_player.id
-        await self.message.edit(content=f"{self.x_player} vs {self.o_player}\n"
+        await self.message.edit(content=f"{self.x_player} as 'X' vs {self.o_player} as 'O'\n"
                                         f"```\n{self.board[0]}|{self.board[1]}|{self.board[2]}"
                                         f"\n-----\n{self.board[3]}|{self.board[4]}|{self.board[5]}"
                                         f"\n-----\n{self.board[6]}|{self.board[7]}|{self.board[8]}\n```"
@@ -59,7 +62,11 @@ class Game:
     async def check_win(self):
         for w in self.win:
             if self.board[w[0]] == self.board[w[1]] == self.board[w[2]] != " ":
-                await self.channel.send(f"<@{self.x_player.id if self.board[w[0]] == 'X' else self.o_player.id}>"
+                await self.message.edit(content=f"{self.x_player} as 'X' vs {self.o_player} as 'O'\n"
+                                        f"```\n{self.board[0]}|{self.board[1]}|{self.board[2]}"
+                                        f"\n-----\n{self.board[3]}|{self.board[4]}|{self.board[5]}"
+                                        f"\n-----\n{self.board[6]}|{self.board[7]}|{self.board[8]}\n```"
+                                        f"<@{self.x_player.id if self.board[w[0]] == 'X' else self.o_player.id}>"
                                         f" has won!")
                 with open("standings.csv", "a", newline='') as csvfile:
                     writer = csv.writer(csvfile, delimiter=",")
