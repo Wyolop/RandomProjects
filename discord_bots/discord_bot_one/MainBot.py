@@ -19,8 +19,6 @@ async def on_message(message):
         return
     if any(msg.startswith(word) for word in bad_words) and " bot " in msg:
         await message.channel.send(":(")
-    if message.author.id == 221661921886208001:
-        await message.channel.send("Osta Pätimeri!")
     if msg.startswith(" $play"):
         if message.author not in tic_tac_toe_games:
             game = TicTacToe.Game(message.channel)
