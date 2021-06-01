@@ -18,7 +18,7 @@ async def on_message(message):
     if message.author == client.user:
         return
     if any(msg.startswith(word) for word in bad_words) and " bot " in msg:
-        await message.channel.send("Fuck off!")
+        await message.channel.send(":(")
     if message.author.id == 221661921886208001:
         await message.channel.send("Osta Pätimeri!")
     if msg.startswith(" $play"):
